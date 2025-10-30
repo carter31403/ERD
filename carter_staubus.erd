@@ -1,0 +1,70 @@
+`erdiagram Model
+@startuml
+
+entity "Customer" as Customer {
+  * c_id       : BIGINT <<PK>>
+  --
+    c_name     : VARCHAR
+    c_phone    : VARCHAR(10)
+}
+
+entity "Vendor" as Vendor {
+  * v_id       : BIGINT <<PK>>
+  --
+    v_name     : VARCHAR
+    v_phone    : VARCHAR(10)
+}
+
+entity "Product" as Product {
+  * p_id       : BIGINT <<PK>>
+  --
+    p_category : VARCHAR
+    v_id       : BIGINT <<FK>>
+    p_price    : NUMERIC
+    p_description : TEXT
+}
+
+entity "Inventory" as Inventory {
+  * in_id      : BIGINT <<PK>>
+  --
+    p_id       : BIGINT <<FK>>
+    date       : DATE
+}
+
+entity "Invoice" as Invoice {
+  * i_id       : BIGINT <<PK>>
+  --
+    c_id       : BIGINT <<FK>>
+    i_date     : DATE
+    inv_payment_type : VARCHAR
+    i_total_price : NUMERIC
+}
+
+entity "Order" as Order {
+  * o_id       : BIGINT <<PK>>
+  --
+    i_id       : BIGINT <<FK>>
+    p_id       : BIGINT <<FK>>
+    o_quantity : INT
+    o_price    : NUMERIC
+}
+
+entity "Back_Order" as BackOrder {
+  * b_id       : BIGINT <<PK>>
+  --
+    c_id       : BIGINT <<FK>>
+    o_id       : BIGINT <<FK>>
+    status     : SMALLINT
+    b_date     : DATE
+}
+
+' Cardinalities (labels)
+Customer "1" -- "0..*" Invoice : has
+Vendor   "1" -- "1..*" Product : supplies
+Product  "1" -- "0..*" Order : "appears in"
+Invoice  "1" -- "1..*" Order : "contains"
+Order    "0..1" -- "1" BackOrder : "may have"
+Product  "1" -- "0..*" Inventory : "is stocked in"
+Customer "1" -- "0..*" BackOrder : "may place"
+
+@enduml
